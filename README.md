@@ -48,8 +48,6 @@ KMDB is a Spring Boot-based REST API that provides functionalities to manage mov
 
 ## Architecture
 
-![Architecture Diagram](https://github.com/user-attachments/assets/721b7fb3-e480-4809-9023-fd48b82b1f8c)
-
 The application follows a layered architecture:
 
 - **Controller Layer:** Exposes REST endpoints for interacting with the application. Uses `MovieController`, `ActorController`, and `GenreController`.
