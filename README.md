@@ -1,174 +1,164 @@
-<div align="center">
-<h3 align="center">KMDB</h3>
-  <p align="center">
-    A REST API for managing movies, actors, and genres using Spring Boot and SQLite.
-    <br />
-     <a href="https://github.com/kakopkak/kmdb">https://github.com/kakopkak/kmdb</a>
-  </p>
-</div>
+# KMDB 
 
-## Table of Contents
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#key-features">Key Features</a></li>
-      </ul>
-    </li>
-    <li><a href="#architecture">Architecture</a></li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#testing-the-api">Testing the API</a>
-      <ul>
-        <li><a href="#using-postman">Using Postman</a></li>
-        <li><a href="#example-requests">Example Requests</a></li>
-        <li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
-      </ul>
-    </li>
-    <li><a href="#future-enhancements">Future Enhancements</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol>
-</details>
+KMDB is a RESTful API service for managing a movie database, providing endpoints to create, read, update, and delete information about movies, actors, and genres.
 
-## About The Project
-KMDB is a Spring Boot-based REST API that provides functionalities to manage movies, actors, and genres. It uses SQLite as the database. The application allows users to perform CRUD operations on movies, actors, and genres, as well as filter movies based on genre, release year, and actor. It also includes exception handling and validation for data integrity.
+## Overview
 
-### Key Features
-- **CRUD Operations:** Create, Read, Update, and Delete movies, actors, and genres.
-- **Filtering:** Filter movies by genre, release year, or actor.
-- **Pagination:** Implemented for retrieving large datasets of movies, actors, and genres.
-- **Validation:** Data validation using Jakarta Validation annotations to ensure data integrity.
-- **Exception Handling:** Global exception handling for common errors like resource not found, bad requests, and forbidden operations.
-- **SQLite Database:** Uses SQLite for data persistence.
+The KMDB application is built using Spring Boot with Java, offering a comprehensive set of APIs for managing a movie database. The application follows a standard layered architecture:
 
-## Architecture
-The application follows a layered architecture:
-- **Controller Layer:** Exposes REST endpoints for interacting with the application. Uses `MovieController`, `ActorController`, and `GenreController`.
-- **Service Layer:** Contains the business logic for managing movies, actors, and genres. Uses `MovieService`, `ActorService`, and `GenreService`.
-- **Repository Layer:** Provides data access using Spring Data JPA repositories. Uses `MovieRepository`, `ActorRepository`, and `GenreRepository`.
-- **Entity Layer:** Defines the data model for movies, actors, and genres. Uses `Movie`, `Actor`, and `Genre` entities.
-- **Database:** SQLite database for persistent storage.
+- **Controllers**: Handle HTTP requests and responses
+- **Services**: Contain business logic
+- **Repositories**: Handle data access
+- **Entities**: Define the data model
 
-The application uses the following technologies:
-- **Spring Boot:** Framework for building the application.
-- **Spring Data JPA:** Simplifies database access.
-- **SQLite:** Embedded database for storing data.
-- **Jakarta Validation:** For validating data input.
-- **Maven:** Build automation tool.
+## Key Features
+
+- CRUD operations for movies, actors, and genres
+- Many-to-many relationships between entities
+- Pagination support for all list endpoints
+- Filtering capabilities by various criteria
+- Validation for all input data
+- Proper error handling
+
+## API Endpoints
+
+### Movies
+
+- `GET /api/movies`: Get all movies (paginated)
+- `GET /api/movies/{id}`: Get a specific movie by ID
+- `GET /api/movies/search?title={title}`: Search movies by title
+- `GET /api/movies?genre={genreId}`: Filter movies by genre
+- `GET /api/movies?year={year}`: Filter movies by release year
+- `GET /api/movies?actor={actorId}`: Filter movies by actor
+- `GET /api/movies/{id}/actors`: Get all actors in a movie
+- `POST /api/movies`: Create a new movie
+- `PATCH /api/movies/{id}`: Update a movie
+- `DELETE /api/movies/{id}`: Delete a movie (with optional `force` parameter)
+- `DELETE /api/movies`: Delete all movies
+
+### Actors
+
+- `GET /api/actors`: Get all actors (paginated)
+- `GET /api/actors?name={name}`: Filter actors by name
+- `GET /api/actors/{id}`: Get a specific actor by ID
+- `POST /api/actors`: Create a new actor
+- `PATCH /api/actors/{id}`: Update an actor
+- `DELETE /api/actors/{id}`: Delete an actor (with optional `force` parameter)
+- `DELETE /api/actors`: Delete all actors
+
+### Genres
+
+- `GET /api/genres`: Get all genres (paginated)
+- `GET /api/genres/{id}`: Get a specific genre by ID
+- `POST /api/genres`: Create a new genre
+- `PATCH /api/genres/{id}`: Update a genre
+- `DELETE /api/genres/{id}`: Delete a genre (with optional `force` parameter)
+- `DELETE /api/genres`: Delete all genres
+
+## Data Models
+
+### Movie
+
+- `id`: Long (auto-generated)
+- `title`: String (required, 1-255 characters)
+- `releaseYear`: int (min: 1888, max: 2100)
+- `duration`: int (min: 1 minute)
+- `genres`: Set of Genre objects
+- `actors`: Set of Actor objects
+
+### Actor
+
+- `id`: Long (auto-generated)
+- `name`: String (required, 1-255 characters)
+- `birthDate`: LocalDate (required, must be in the past)
+- `movies`: Set of Movie objects
+
+### Genre
+
+- `id`: Long (auto-generated)
+- `name`: String (required)
+- `movies`: Set of Movie objects
+
+## Pagination
+
+All list endpoints support pagination with the following query parameters:
+- `pageNo`: Page number (zero-based, defaults to 0)
+- `pageSize`: Number of items per page (defaults to 10)
+
+## Error Handling
+
+The API handles various error scenarios:
+- Resource not found (404)
+- Bad request for invalid input (400)
+- Forbidden operations, like deleting entities with relationships (403)
+
+## Technologies Used
+
+- Spring Boot
+- Spring Data JPA
+- Jakarta Persistence
+- Jakarta Validation
+- Lombok
 
 ## Getting Started
-### Prerequisites
-- Java 21
-- Maven
-- An IDE such as IntelliJ IDEA or Eclipse
 
-### Installation
-1. Clone the repository:
-   ```sh
-   git clone https://github.com/kakopkak/kmdb.git
-   cd kmdb
-   ```
-2. Build the project using Maven:
-   ```sh
-   ./mvnw clean install
-   ```
-3. Run the application:
-   ```sh
-   ./mvnw spring-boot:run
-   ```
-   Alternatively, you can run the `KmdbApplication.java` file directly from your IDE.
-4. The API will be accessible at `http://localhost:8080/api`.
+1. Clone the repository
+2. Configure your database settings in `application.properties`
+3. Run the SQL script included in the repository to populate the database with initial data
+4. Run the application using `./mvnw spring-boot:run` or through your IDE
+5. Access the API at `http://localhost:8080/api`
 
-## Testing the API
+## Postman Collection
 
-### Using Postman
-A **Postman** collection named **Movie Database API** is available in the repository. Import it into Postman to test the API endpoints easily.
+A Postman collection is included in the repository (`KMDB API Collection.postman_collection.json`) to help test and interact with the API. The collection includes pre-configured requests for all available endpoints.
 
-### Example Requests
+To use the collection:
+1. Import the JSON file into Postman
+2. Set the `base_url` variable to your server address (default: `http://localhost:8080`)
+3. Use the organized request folders to test each endpoint
 
-#### 1. Create a New Genre
-```
-POST /api/genres
-Content-Type: application/json
+## Examples
 
+### Creating a Movie
+
+```json
+POST /api/movies
 {
-  "name": "Adventure"
+  "title": "The Shawshank Redemption",
+  "releaseYear": 1994,
+  "duration": 142,
+  "genres": [
+    {"id": 1},
+    {"id": 2}
+  ],
+  "actors": [
+    {"id": 1},
+    {"id": 2}
+  ]
 }
 ```
 
-#### 2. Get Movies by Genre
-```
-GET /api/movies?genre=1
-```
+### Creating an Actor
 
-#### 3. Search Movies by Title
-```
-GET /api/movies/search?title=matrix
-```
-
-#### 4. Update an Actor's Name
-```
-PATCH /api/actors/1
-Content-Type: application/json
-
-{
-  "name": "Leonardo DiCaprio Jr."
-}
-```
-
-#### 5. Delete a Genre with Cascade
-```
-DELETE /api/genres/1?cascade=true
-```
-
-### Error Handling and Validation
-* **404 Not Found**: Returned when a requested resource does not exist.
-* **400 Bad Request**: Returned when validation fails or input data is invalid.
-* **Validation Annotations**:
-   * `@NotBlank`: Ensures that a string is not null or empty.
-   * `@Past`: Validates that a date is in the past.
-   * `@Min` and `@Max`: Checks numerical constraints.
-* **Exception Handling**:
-   * A `@ControllerAdvice` class handles exceptions globally and returns meaningful error responses.
-
-#### Example: Handling Invalid Birth Date
-```
+```json
 POST /api/actors
-Content-Type: application/json
-
 {
-  "name": "John Doe",
-  "birthDate": "2025-01-01"
+  "name": "Morgan Freeman",
+  "birthDate": "1937-06-01"
 }
 ```
 
-**Response**:
-```
-HTTP/1.1 400 Bad Request
-Content-Type: application/json
+### Creating a Genre
 
+```json
+POST /api/genres
 {
-  "timestamp": "2024-10-01T12:00:00.000+00:00",
-  "status": 400,
-  "error": "Bad Request",
-  "message": "Birth date must be in the past",
-  "path": "/api/actors"
+  "name": "Drama"
 }
 ```
 
-## Future Enhancements
-* **Authentication and Authorization**: Implement security measures using Spring Security.
-* **Swagger Documentation**: Integrate Swagger for API documentation.
-* **Bulk Operations**: Add endpoints for bulk creation and updates.
-* **Advanced Search**: Implement more complex search queries and filters.
-* **Internationalization**: Support multiple languages for data input and output.
+## Database Initialization
 
-## Acknowledgments
+To demonstrate the functionality, you can populate the database with sample data.
+
+The repository contains SQL script file called "**sql-data-script.sql**" which can be run to populate the database. 
