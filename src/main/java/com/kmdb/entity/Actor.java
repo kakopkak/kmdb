@@ -3,12 +3,11 @@ package com.kmdb.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.kmdb.converter.LocalDateConverter;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -17,15 +16,17 @@ import java.util.Set;
 public class Actor {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Size(min = 1, max = 255, message = "Actor name must be between 1 and 255 characters")
     @NotNull(message = "Actor name cannot be null")
     private String name;
 
-    @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "Birth date must be in YYYY-MM-DD format")
-    private String birthDate;
+    @NotNull(message = "Birth date cannot be null")
+    @Past(message = "Birth date must be in the past")
+    @Convert(converter = LocalDateConverter.class)
+    private LocalDate birthDate;
 
     @JsonBackReference
     @ManyToMany(cascade = CascadeType.MERGE)
@@ -38,7 +39,7 @@ public class Actor {
     public Actor() {
     }
 
-    public Actor(String name, String birthDate) {
+    public Actor(String name, LocalDate birthDate) {
         this.name = name;
         this.birthDate = birthDate;
     }
@@ -51,7 +52,7 @@ public class Actor {
         return this.name;
     }
 
-    public String getBirthDate() {
+    public LocalDate getBirthDate() {
         return this.birthDate;
     }
 
@@ -59,7 +60,7 @@ public class Actor {
         this.name = name;
     }
 
-    public void setBirthDate(String birthDate) {
+    public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 

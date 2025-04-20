@@ -5,15 +5,12 @@ import com.kmdb.entity.Movie;
 import com.kmdb.exception.ResourceNotFoundException;
 import com.kmdb.repository.ActorRepository;
 import dto.ActorResponse;
-import dto.GenreResponse;
 import jakarta.transaction.Transactional;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ActorService {
@@ -67,7 +64,7 @@ public class ActorService {
 
     public ActorResponse filterActorsByName(String name, int pageNo, int pageSize) {
         PageRequest pageable = PageRequest.of(pageNo, pageSize);
-        Page<Actor> actors = actorRepository.findActorByName(name, pageable);
+        Page<Actor> actors = actorRepository.findActorByNameContainingIgnoreCase(name, pageable);
 
         return getActorResponse(actors);
     }
